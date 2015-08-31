@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, width=device-width, height=device-height" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <title>Invent App</title>
+        <!-- include scripts -->
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/database.js"></script>
+        <script type="text/javascript" src="js/user.js"></script>
+        <script type="text/javascript" src="js/worksheet.js"></script>
+
+        <script type="text/javascript">
+            // Wait for device API libraries to load
+            function onLoad() {
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+
+            // device APIs are available
+            function onDeviceReady() {
+                // Register the event listener
+                document.addEventListener("backbutton", onBackKeyDown, false);
+            }
+
+            // Handle the back button
+            function onBackKeyDown() {
+                window.history.back();
+                //console.log(navigator.connection);
+            }
+        </script>
+
+    </head>
+    <body onload="onLoad()">
+
+        <h1>Werkbon uitvoerend</h1>
+        <h2>Bedrijf</h2>
+        <br />
+        <br />
+
+        <i class="fa fa-suitcase fa-5x"></i>
+
+        <!-- Check if user is allowed to be here -->
+        <script type="text/javascript">
+
+            // check if logged in
+            user.initialize();
+
+            if (window.localStorage.getItem('worksheetstatus') != "1") {
+                window.location.assign('index.html');
+            }
+
+
+        </script>
+
+        <br />
+
+        <select onchange="showInfo()" id="client">
+            <option value=""></option>
+            <script type="text/javascript">
+                var json = JSON.parse(window.localStorage.getItem('clients'));
+
+                for (var client in json) {
+                    document.write('<option value="' + json[client].client_id + '">' + json[client].client_company + '</option>');
+                }
+            </script>
+        </select>
+        
+        <div id="info"><br />Info <br/></div>
+
+        <script type="text/javascript">
+
+            var info = document.getElementById('info');
+
+            var HTML = info.innerHTML;
+
+            function showInfo() { 
+                // get the select
+                var e = document.getElementById("client");
+                
+                // get selected it
+                var selected = e.options[e.selectedIndex].value;
+
+                for (var client in json){
+                    if(json[client].client_id == selected){
+                        
+                        info.innerHTML = HTML + json[client].client_name + "<br />" +
+                                        json[client].client_address + "<br />" +
+                                        json[client].client_postal + "<br />" +
+                                        json[client].client_city + "<br />" +
+                                        json[client].client_phone + "<br />" +
+                                        json[client].client_email + "<br />";
+                    }
+                }
+
+            }
+
+        </script>
+
+        <div id="result"></div>
+    </body>
+</html>

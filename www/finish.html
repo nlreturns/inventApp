@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, width=device-width, height=device-height" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <title>Invent App</title>
+        <!-- include scripts -->
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/database.js"></script>
+        <script type="text/javascript" src="js/user.js"></script>
+        <script type="text/javascript" src="js/worksheet.js"></script>
+        <script type="text/javascript" src="js/stopwatch.js"></script>
+        <script type="text/javascript" src="js/client.js"></script>
+
+        <!-- signature plugin -->
+        <script type="text/javascript" src="js/flashcanvas.js"></script>
+        <script type="text/javascript" src="js/jquery.signaturepad.min.js"></script>
+        <script type="text/javascript" src="js/json2.min.js"></script>
+        <link rel="stylesheet" href="css/jquery.signaturepad.css">
+
+        <script type="text/javascript">
+            // Wait for device API libraries to load
+            function onLoad() {
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+
+            // device APIs are available
+            function onDeviceReady() {
+                // Register the event listener
+                document.addEventListener("backbutton", onBackKeyDown, false);
+            }
+
+            // Handle the back button
+            function onBackKeyDown() {
+                window.history.back();
+            }
+        </script>
+
+    </head>
+    <body onload="onLoad()">
+
+        <h1>Werkbon uitvoerend</h1>
+        <h2><i class="fa fa-check "></i> Afronding</h2>
+        <br />
+        <br />
+        <br />
+
+        
+
+        <label for="sheetType">Bontype: </label>
+        <input id="sheetType" name="sheetType" type="text" required />
+        <br />
+        <label for="CRMNumber">CRMnummer: </label>
+        <input id="CRMNumber" name="CRMNumber" type="text" required />
+        <br />
+        <label for="CRMDate">CRMdatum: </label>
+        <input id="CRMDate" name="CRMDate" type="date" required />
+        <br /><br />
+        
+        <form method="post" action="" class="sigPad">
+            <ul class="sigNav">
+                <li class="drawIt"><a href="#draw-it" >Draw It</a></li>
+                <li class="clearButton"><a href="#clear">Clear</a></li>
+            </ul>
+            <div class="sig sigWrapper">
+                <div class="typed"></div>
+                <canvas class="pad" width="198" height="55"></canvas>
+                <input id="output" type="hidden" name="output" class="output">
+            </div>
+        </form>
+        
+        <br />
+        Hierbij accepteer ik de algemene voorwaarden.
+        <br />
+        <button onclick="finishSheet()" >Afronden</button>
+
+
+        <!-- Check if user is allowed to be here -->
+        <script type="text/javascript">
+
+            // check if logged in
+            user.initialize();
+
+            if (window.localStorage.getItem('id')) {
+
+            } else {
+                window.location.assign('index.html');
+            }
+
+            $(document).ready(function() {
+                $('.sigPad').signaturePad();
+            });
+
+            function finishSheet() {
+                // select
+                var number = document.getElementById('CRMNumber');
+
+                // get value
+                var number = number.value;
+
+                var date = document.getElementById('CRMDate');
+
+                var date = date.value;
+
+                var type = document.getElementById('sheetType');
+
+                var type = type.value;
+                
+                var signature = document.getElementById('output');
+                
+                var signature = signature.value;
+
+                worksheet.finish(type, number, date, signature);
+            }
+
+        </script>
+
+        <div id="result"></div>
+    </body>
+</html>

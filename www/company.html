@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, width=device-width, height=device-height" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <title>Invent App</title>
+        <!-- include scripts -->
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/database.js"></script>
+        <script type="text/javascript" src="js/user.js"></script>
+        <script type="text/javascript" src="js/worksheet.js"></script>
+
+        <script type="text/javascript">
+            // Wait for device API libraries to load
+            function onLoad() {
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+
+            // device APIs are available
+            function onDeviceReady() {
+                // Register the event listener
+                document.addEventListener("backbutton", onBackKeyDown, false);
+            }
+
+            // Handle the back button
+            function onBackKeyDown() {
+                window.history.back();
+                //console.log(navigator.connection);
+            }
+        </script>
+
+    </head>
+    <body onload="onLoad()">
+
+        <h1>Werkbon uitvoerend</h1>
+        <h2><i class="fa fa-suitcase"></i> Bedrijf</h2>
+        <br />
+        <br />
+        <br />
+        <button onclick="createClient()" >Aanmaken</button>
+
+        <!-- Check if user is allowed to be here -->
+        <script type="text/javascript">
+            // check if logged in
+            user.initialize();
+
+            if (window.localStorage.getItem('id')) {
+
+            } else {
+                window.location.assign('index.html');
+            }
+        </script>
+
+        <div id="container">
+
+
+            <br />
+
+            <select onchange="showInfo()" id="client">
+                <option value="null"></option>
+                <script type="text/javascript">
+                    var json = JSON.parse(window.localStorage.getItem('clients'));
+
+                    for (var client in json) {
+                        document.write('<option value="' + json[client].client_id + '">' + json[client].client_company + '</option>');
+                    }
+                </script>
+            </select>
+
+            <br /><button onclick="selectClient()">Selecteren</button>
+
+            <div id="info">
+                <br />Info<br/>
+
+            </div>
+
+        </div>
+
+        <script type="text/javascript">
+
+            // selct page
+            var page = document.getElementById("container");
+
+            // select info
+            var info = document.getElementById('info');
+
+            // get info HTML
+            var HTML = info.innerHTML;
+
+            // save old HTML to swap back
+            var oldHTML = page.innerHTML;
+
+            // set changing on
+            var change = 1;
+
+            function showInfo() {
+                // get the select
+                var e = document.getElementById("client");
+
+                // get selected id
+                var selected = e.options[e.selectedIndex].value;
+
+                for (var client in json) {
+                    if (json[client].client_id == selected) {
+                        // set info in html
+                        info.innerHTML = HTML + json[client].client_name + "<br />" +
+                                json[client].client_address + "<br />" +
+                                json[client].client_postal + "<br />" +
+                                json[client].client_city + "<br />" +
+                                json[client].client_phone + "<br />" +
+                                json[client].client_email + "<br />";
+                    }
+                }
+            }
+
+            function selectClient() {
+                // get id
+                var e = document.getElementById("client");
+
+                var selected = e.options[e.selectedIndex].value;
+
+                // store id
+                window.localStorage.setItem('clientid', selected);
+
+            }
+
+            function createClient() {
+
+                // get excisting data if available
+                if (window.localStorage.getItem('addCompany')) {
+
+                    var addCompany = window.localStorage.getItem('addCompany');
+
+                    var addCompany = JSON.parse(addCompany);
+
+                    var name = addCompany.name;
+                    var address = addCompany.address;
+                    var postal = addCompany.postal;
+                    var city = addCompany.city;
+                    var phone = addCompany.phone;
+                    var email = addCompany.email;
+                    var company = addCompany.company;
+
+                } else {
+                    var name = "";
+                    var address = "";
+                    var postal = "";
+                    var city = "";
+                    var phone = "";
+                    var email = "";
+                    var company = "";
+                }
+                // if changing is ON, change
+                if (change === 1) {
+                    change = 0;
+
+                    // build html to replace page
+                    var newHTML = "<br />\
+                                <label for='company'>Bedrijf </label>\
+                                <input value='" + company + "' onchange='saveData()' id='company' name='company' placeholder='DOW' required /><br />\
+                                <label for='name'>Naam </label>\
+                                <input value='" + name + "' onchange='saveData()' id='name' name='name' placeholder='D. Janssen' required /><br />\
+                                <label for='address'>Adres </label>\
+                                <input value='" + address + "' onchange='saveData()' id='address' name='address' placeholder='Dreef 12a' required /><br />\
+                                <label for='postal'>Postcode </label>\
+                                <input value='" + postal + "' onchange='saveData()' id='postal' name='postal' placeholder='1614LA' required /><br />\
+                                <label for='city'>Stad </label>\
+                                <input value='" + city + "' onchange='saveData()' id='city' name='city' placeholder='Amsterdam' required /><br />\
+                                <label for='phone'>Tele Nr. </label>\
+                                <input value='" + phone + "' onchange='saveData()' id='phone' name='phone' placeholder='0115-271938' required /><br />\
+                                <label for='email'>Email </label>\
+                                <input value='" + email + "' onchange='saveData()' id='email' name='email' placeholder='mailme@gmail.com' required /><br />";
+
+                    page.innerHTML = newHTML;
+
+                } else {
+                    // show old HTML + put change ON
+                    change = 1;
+
+                    page.innerHTML = oldHTML;
+                }
+            }
+
+            function saveData() {
+                // create object
+                var addCompany = {
+                    company : document.getElementById("company").value,
+                    name: document.getElementById("name").value,
+                    address: document.getElementById("address").value,
+                    postal: document.getElementById("postal").value,
+                    city: document.getElementById("city").value,
+                    phone: document.getElementById("phone").value,
+                    email: document.getElementById("email").value
+                };
+
+                var addCompany = JSON.stringify(addCompany);
+
+                // save in localstorage
+                window.localStorage.setItem('addCompany', addCompany);
+
+            }
+
+        </script>
+
+        <div id="result"></div>
+    </body>
+</html>

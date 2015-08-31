@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, width=device-width, height=device-height" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <title>Invent App</title>
+        <!-- include scripts -->
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/database.js"></script>
+        <script type="text/javascript" src="js/user.js"></script>
+        <script type="text/javascript" src="js/worksheet.js"></script>
+
+        <script type="text/javascript">
+            // Wait for device API libraries to load
+            function onLoad() {
+                document.addEventListener("deviceready", onDeviceReady, false);
+            }
+
+            // device APIs are available
+            function onDeviceReady() {
+                // Register the event listener
+                document.addEventListener("backbutton", onBackKeyDown, false);
+            }
+
+            // Handle the back button
+            function onBackKeyDown() {
+                window.history.back();
+            }
+        </script>
+
+    </head>
+    <body onload="onLoad()">
+
+        <h1>Werkbon uitvoerend</h1>
+        <h2><i class="fa fa-plus"></i> Materialen</h2>
+        <br />
+        <br />
+        <br />
+
+        <i class="fa fa-plus fa-2x" onclick="appendRow()"></i>
+
+        <table id="table">
+            <tr>
+                <td>Materiaal</td>
+                <td>Qt</td>
+                <td>Prijs</td>
+            </tr>
+        </table>
+
+        <!-- Check if user is allowed to be here -->
+        <script type="text/javascript">
+
+            // loop materials
+            var materials = window.localStorage.getItem('material');
+            
+            var materials = JSON.parse(materials);
+            
+            var materialValues = [];
+            
+            for (var material in materials) {
+                // material = name
+                // materials[material] = value
+                sliced = material.slice(0, 4);
+
+                if (lastMaterial) {
+                    if (sliced === lastMaterial) {
+                        var i = material.slice(5, 6);
+                        materialValues[i] = materials[material];
+                    } else {
+                        // send
+                        sendArray = [];
+
+                        var i = 0;
+
+                        for (var cell in materialValues) {
+                            if (i === 0) {
+                                sendArray.push("<input name='material' onchange='save(this)' value='" + materialValues[cell] + "' />");
+                            } else if (i === 1) {
+                                sendArray.push("<input name='qt' onchange='save(this)' type='number' min='1' max='100' value='" + materialValues[cell] + "' />");
+                            } else if (i === 2) {
+                                sendArray.push("<input name='price' onchange='save(this)' value='" + materialValues[cell] + "' />");
+                            }
+                            i++;
+                        }
+
+                        appendRow(sendArray);
+
+                        // empty values
+                        materialValues = [];
+
+                        // push first
+                        materialValues.push(materials[material]);
+                    }
+                } else {
+                    materialValues.push(materials[material]);
+                }
+
+                var lastMaterial = sliced;
+            }
+
+            // send one last time
+            sendArray = [];
+
+            var i = 0;
+            
+            if (materialValues.length === 0 ) {
+                // don t do shit
+                console.log("sup");
+            } else {
+
+
+                for (var cell in materialValues) {
+                    if (i === 0) {
+                        sendArray.push("<input name='material' onchange='save(this)' value='" + materialValues[cell] + "' />");
+                    } else if (i === 1) {
+                        sendArray.push("<input name='qt' onchange='save(this)' type='number' min='1' max='100' value='" + materialValues[cell] + "' />");
+                    } else if (i === 2) {
+                        sendArray.push("<input name='price' onchange='save(this)' value='" + materialValues[cell] + "' />");
+                    }
+                    i++;
+                }
+
+                appendRow(sendArray);
+
+            }
+            // check if logged in
+            user.initialize();
+
+            if (window.localStorage.getItem('id')) {
+
+            } else {
+                window.location.assign('index.html');
+            }
+
+
+            // append row to the HTML table
+            function appendRow(array) {
+
+                array = array || ["<input name='material' onchange='save(this)' />", "<input name='qt' onchange='save(this)' type='number' min='1' max='100' />", "<input name='price' onchange='save(this)' />"];
+
+                var tbl = document.getElementById('table'), // table reference
+                        row = tbl.insertRow(tbl.rows.length), // append table row
+                        i;
+                var totalRows = document.getElementById('table').getElementsByTagName("tr").length;
+
+                // insert table cells to the new row
+                for (i = 0; i < tbl.rows[0].cells.length; i++) {
+                    createCell(row.insertCell(i), array[i], 'row' + totalRows + "-" + i);
+                }
+            }
+
+            // create DIV element and append to the table cell
+            function createCell(cell, text, style) {
+                var div = document.createElement('div'),
+                        txt = document.createTextNode(text);// create DIV element
+
+
+                div.appendChild(txt);
+                div.setAttribute('id', style);
+                // append text node to the DIV
+                cell.appendChild(div);                   // append DIV to the table cell
+
+                document.getElementById(style).innerHTML = text;
+            }
+
+            /*
+             * value = DOM object
+             */
+            function save(input) {
+                // get value
+                var value = input.value;
+                // get div id
+                var div = $(input).closest('div').attr('id');
+
+                var obj = window.localStorage.getItem('material');
+                
+                var obj = JSON.parse(obj);
+
+                obj[div] = value;
+                
+                var obj = JSON.stringify(obj);
+                
+                window.localStorage.setItem('material', obj);
+            }
+
+        </script>
+
+        <br />
+
+        <div id="result"></div>
+    </body>
+</html>
