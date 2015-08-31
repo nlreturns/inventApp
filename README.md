@@ -4,6 +4,7 @@
  
  0. Creating the app
    - Creating the android APK through jsfiddle and phoneGap(Cordova)-framework. Full tutorial can be found at the phoneGap website.
+ 
   ## ALL CONNECTIONS TO DATABASE ARE HARDCODED - CHANGE WHEN SERVER IS SET UP
 
  1. Setting up the server
